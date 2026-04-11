@@ -34,7 +34,7 @@ unsigned long rampUpDuration;
 unsigned long warmupLimit = 300000;
 
 WebServer server(80);
-IPAddress local_IP(192, 168, 0, 119);
+IPAddress local_IP(192, 168, 0, Your_local_IPAdress);
 IPAddress gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
 
