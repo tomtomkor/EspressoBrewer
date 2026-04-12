@@ -5,19 +5,25 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
+#include "rbdimmerESP32.h"  // RBDimmer 라이브러리 추가
 
 Preferences prefs;
 
+// ===== RBDimmer 설정 =====
+#define ZERO_CROSS_PIN   5   // PIN_OPTO_IN (제로 크로싱 감지)
+#define DIMMER_PIN       7   // PIN_DIMMER_OUT (TRIAC 제어)
+#define PHASE_NUM        0   // 단상
 
+rbdimmer_channel_t* dimmer_channel = NULL;
+
+// ===== 기존 핀 설정 =====
 const int PIN_OPTO_IN    = 5;   
 const int PIN_TOUCH_IN   = 6;   
 const int PIN_DIMMER_OUT = 7;   
 
-
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-
 
 bool isReady = false;           
 unsigned long powerOnTime = 0;  
@@ -26,21 +32,32 @@ String currentProfileName = "Basic";
 bool isProcessing = false;      
 unsigned long brewStartTime = 0; 
 
-
 int preInfusionPower;      
 int preInfusionTime;    
 int pauseTime;
 unsigned long rampUpDuration; 
-unsigned long warmupLimit = 300000;  // time to reach desired temperature
+unsigned long warmupLimit = 300000;
 
 WebServer server(80);
-IPAddress local_IP(192, 168, 0, Your_local_IPAdress);
+IPAddress local_IP(192, 168, 0, 119);
 IPAddress gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
 
 const char* ssid = "Your SSID";
 const char* password = "password";
 
+// ===== 디머 제어 헬퍼 함수 =====
+void setDimmerLevel(int percent) {
+  // percent: 0-100 (0=OFF, 100=최대)
+  if (dimmer_channel != NULL) {
+    rbdimmer_set_level(dimmer_channel, percent);
+  }
+}
+
+int powerToPercent(int power255) {
+  // 0-255 값을 0-100%로 변환
+  return map(constrain(power255, 0, 255), 0, 255, 0, 100);
+}
 
 void displayStatus(String msg, String bigMsg) {
   display.clearDisplay();
@@ -51,7 +68,6 @@ void displayStatus(String msg, String bigMsg) {
   display.println(bigMsg);
   display.display();
 }
-
 
 void updateBrewDisplay(String status, unsigned long startTime) {
   display.clearDisplay();
@@ -64,21 +80,18 @@ void updateBrewDisplay(String status, unsigned long startTime) {
   display.display();
 }
 
-
 void showFinalTime(unsigned long startTime) {
-  analogWrite(PIN_DIMMER_OUT, 0);
+  setDimmerLevel(0);  // 디머 OFF (0%)
   unsigned long total = (millis() - startTime) / 1000;
   displayStatus("TOTAL TIME", String(total) + " SEC");
   delay(5000); 
   isProcessing = false;
 }
 
-
 void checkReadyStatus() {
   if (millis() - powerOnTime > warmupLimit) isReady = true;
   else isReady = false;
 }
-
 
 void runBrewCycle() {
   brewStartTime = millis(); 
@@ -87,7 +100,7 @@ void runBrewCycle() {
   while(millis() - brewStartTime < preInfusionTime) {
     if(digitalRead(PIN_OPTO_IN) == LOW) break;
     updateBrewDisplay("INFUSING...", brewStartTime);
-    analogWrite(PIN_DIMMER_OUT, preInfusionPower);
+    setDimmerLevel(preInfusionPower);  // 바로 % 값 사용
   }
 
   // Phase 2: Pause
@@ -95,17 +108,17 @@ void runBrewCycle() {
   while(millis() - pauseStart < pauseTime) {
     if(digitalRead(PIN_OPTO_IN) == LOW) break;
     updateBrewDisplay("PAUSING...", brewStartTime);
-    analogWrite(PIN_DIMMER_OUT, 0);
+    setDimmerLevel(0);
   }
 
   // Phase 3: Extraction (Ramp up & Main)
   unsigned long rampStartTime = millis();
   while(digitalRead(PIN_OPTO_IN) == HIGH) {
     unsigned long now = millis();
-    int currentPower = (now - rampStartTime < rampUpDuration) 
-                       ? map(now - rampStartTime, 0, rampUpDuration, preInfusionPower, 255) 
-                       : 255;
-    analogWrite(PIN_DIMMER_OUT, currentPower);
+    int currentPercent = (now - rampStartTime < rampUpDuration) 
+                       ? map(now - rampStartTime, 0, rampUpDuration, preInfusionPower, 100) 
+                       : 100;
+    setDimmerLevel(currentPercent);  // % 값 직접 사용
     updateBrewDisplay("EXTRACTING: ", brewStartTime);
     
     isReady = false;
@@ -116,7 +129,6 @@ void runBrewCycle() {
   showFinalTime(brewStartTime);
 }
 
-
 void handleExtraction() {
   bool optoState = digitalRead(PIN_OPTO_IN); 
 
@@ -126,15 +138,15 @@ void handleExtraction() {
       isProcessing = true; 
       if (opMode == 1) { 
         displayStatus("MANUAL START", ""); 
-        for(int i=0; i<=255; i+=15) {
-          analogWrite(PIN_DIMMER_OUT, i);
+        for(int i=0; i<=100; i+=15) {  // 0%에서 100%까지
+          setDimmerLevel(i);
           delay(10);
         }
       }
     }
 
     if (opMode == 1) {
-      analogWrite(PIN_DIMMER_OUT, 255);
+      setDimmerLevel(100);  // 100% (최대 출력)
       updateBrewDisplay("PUMPING!", brewStartTime);
     } else {
       runBrewCycle();
@@ -144,7 +156,6 @@ void handleExtraction() {
     showFinalTime(brewStartTime);
   }
 }
-
 
 void handleTouch() {
   static bool lastTouchState = false;
@@ -158,7 +169,6 @@ void handleTouch() {
   }
   lastTouchState = currentTouch;
 }
-
 
 void updateOLED() {
   if (isProcessing) return; 
@@ -181,7 +191,6 @@ void updateOLED() {
   display.display();
 }
 
-
 void savePreferences() {
   prefs.begin("gaggia", false);
   prefs.putInt("prePower", preInfusionPower);
@@ -196,11 +205,16 @@ void handleSettings() {
   if (server.hasArg("plain") == false) return;
   StaticJsonDocument<512> doc;
   deserializeJson(doc, server.arg("plain"));
+  
   if (doc.containsKey("name")) currentProfileName = doc["name"].as<String>();
-  if (doc.containsKey("prePower")) preInfusionPower = int(255 * doc["prePower"].as<int>() / 100);
+  if (doc.containsKey("prePower")) preInfusionPower = doc["prePower"].as<int>();  // 0-100%
   if (doc.containsKey("preTime"))  preInfusionTime  = 1000 * doc["preTime"].as<int>();
   if (doc.containsKey("pause"))    pauseTime        = 1000 * doc["pause"].as<int>();
   if (doc.containsKey("ramp"))     rampUpDuration   = 1000 * doc["ramp"].as<int>();
+  
+  // 값 범위 제한 (안전을 위해)
+  preInfusionPower = constrain(preInfusionPower, 0, 100);
+  
   savePreferences();
   server.send(200, "application/json", "{\"result\":\"OK\"}");
 }
@@ -221,17 +235,35 @@ void setup() {
   pinMode(PIN_OPTO_IN, INPUT); 
   pinMode(PIN_TOUCH_IN, INPUT);
   pinMode(PIN_DIMMER_OUT, OUTPUT);
-  analogWrite(PIN_DIMMER_OUT, 0);
+  
+  // ===== RBDimmer 초기화 =====
+  rbdimmer_init();
+  
+  // 제로 크로싱 감지기 등록 (PIN_OPTO_IN 사용)
+  rbdimmer_register_zero_cross(ZERO_CROSS_PIN, PHASE_NUM, 0);
+  
+  // 디머 채널 설정
+  rbdimmer_config_t dimmer_config = {
+    .gpio_pin = DIMMER_PIN,
+    .phase = PHASE_NUM,
+    .initial_level = 0,                    // 초기값 0% (OFF)
+    .curve_type = RBDIMMER_CURVE_LINEAR    // 모터/펌프에 적합한 LINEAR
+  };
+  
+  rbdimmer_create_channel(&dimmer_config, &dimmer_channel);
+  
+  // 초기 디머 상태 OFF
+  setDimmerLevel(0);
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) for(;;);
   display.clearDisplay();
 
   prefs.begin("gaggia", false);
-  preInfusionPower = prefs.getInt("prePower", 100);
+  preInfusionPower = prefs.getInt("prePower", 40);
   preInfusionTime  = prefs.getInt("preTime", 5000);
-  pauseTime        = prefs.getInt("pauseTime", 4000);
-  rampUpDuration   = prefs.getULong("rampUp", 3000);
-  currentProfileName = prefs.getString("profName", "Classic");
+  pauseTime        = prefs.getInt("pauseTime", 3000);
+  rampUpDuration   = prefs.getULong("rampUp", 2000);
+  currentProfileName = prefs.getString("profName", "Basic");
   prefs.end();
 
   WiFi.config(local_IP, gateway, subnet);
