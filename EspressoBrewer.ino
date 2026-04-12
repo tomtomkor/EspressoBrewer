@@ -31,7 +31,7 @@ int preInfusionPower;
 int preInfusionTime;    
 int pauseTime;
 unsigned long rampUpDuration; 
-unsigned long warmupLimit = 300000;
+unsigned long warmupLimit = 300000;  // time to reach desired temperature
 
 WebServer server(80);
 IPAddress local_IP(192, 168, 0, Your_local_IPAdress);
@@ -229,7 +229,7 @@ void setup() {
   prefs.begin("gaggia", false);
   preInfusionPower = prefs.getInt("prePower", 100);
   preInfusionTime  = prefs.getInt("preTime", 5000);
-  pauseTime        = prefs.getInt("pauseTime", 3000);
+  pauseTime        = prefs.getInt("pauseTime", 4000);
   rampUpDuration   = prefs.getULong("rampUp", 2000);
   currentProfileName = prefs.getString("profName", "Classic");
   prefs.end();
