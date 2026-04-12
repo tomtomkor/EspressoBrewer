@@ -5,7 +5,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
-#include "rbdimmerESP32.h"  // RBDimmer 라이브러리 추가
+#include "rbdimmerESP32.h"  // RBDimmer 라이브러리
 
 Preferences prefs;
 
@@ -32,7 +32,7 @@ String currentProfileName = "Basic";
 bool isProcessing = false;      
 unsigned long brewStartTime = 0; 
 
-int preInfusionPower;      
+int preInfusionPower;      // 0-100% 값
 int preInfusionTime;    
 int pauseTime;
 unsigned long rampUpDuration; 
@@ -52,11 +52,6 @@ void setDimmerLevel(int percent) {
   if (dimmer_channel != NULL) {
     rbdimmer_set_level(dimmer_channel, percent);
   }
-}
-
-int powerToPercent(int power255) {
-  // 0-255 값을 0-100%로 변환
-  return map(constrain(power255, 0, 255), 0, 255, 0, 100);
 }
 
 void displayStatus(String msg, String bigMsg) {
@@ -81,7 +76,7 @@ void updateBrewDisplay(String status, unsigned long startTime) {
 }
 
 void showFinalTime(unsigned long startTime) {
-  setDimmerLevel(0);  // 디머 OFF (0%)
+  setDimmerLevel(0);  // 디머 OFF
   unsigned long total = (millis() - startTime) / 1000;
   displayStatus("TOTAL TIME", String(total) + " SEC");
   delay(5000); 
@@ -100,7 +95,7 @@ void runBrewCycle() {
   while(millis() - brewStartTime < preInfusionTime) {
     if(digitalRead(PIN_OPTO_IN) == LOW) break;
     updateBrewDisplay("INFUSING...", brewStartTime);
-    setDimmerLevel(preInfusionPower);  // 바로 % 값 사용
+    setDimmerLevel(preInfusionPower);  // preInfusionPower는 0-100%
   }
 
   // Phase 2: Pause
@@ -118,7 +113,7 @@ void runBrewCycle() {
     int currentPercent = (now - rampStartTime < rampUpDuration) 
                        ? map(now - rampStartTime, 0, rampUpDuration, preInfusionPower, 100) 
                        : 100;
-    setDimmerLevel(currentPercent);  // % 값 직접 사용
+    setDimmerLevel(currentPercent);
     updateBrewDisplay("EXTRACTING: ", brewStartTime);
     
     isReady = false;
@@ -138,7 +133,7 @@ void handleExtraction() {
       isProcessing = true; 
       if (opMode == 1) { 
         displayStatus("MANUAL START", ""); 
-        for(int i=0; i<=100; i+=15) {  // 0%에서 100%까지
+        for(int i=0; i<=100; i+=15) {
           setDimmerLevel(i);
           delay(10);
         }
@@ -146,7 +141,7 @@ void handleExtraction() {
     }
 
     if (opMode == 1) {
-      setDimmerLevel(100);  // 100% (최대 출력)
+      setDimmerLevel(100);  // 100% 출력
       updateBrewDisplay("PUMPING!", brewStartTime);
     } else {
       runBrewCycle();
@@ -193,7 +188,7 @@ void updateOLED() {
 
 void savePreferences() {
   prefs.begin("gaggia", false);
-  prefs.putInt("prePower", preInfusionPower);
+  prefs.putInt("prePower", preInfusionPower);    // 0-100% 값 저장
   prefs.putInt("preTime", preInfusionTime);
   prefs.putInt("pauseTime", pauseTime);
   prefs.putULong("rampUp", rampUpDuration);
@@ -236,34 +231,33 @@ void setup() {
   pinMode(PIN_TOUCH_IN, INPUT);
   pinMode(PIN_DIMMER_OUT, OUTPUT);
   
-  // ===== RBDimmer 초기화 =====
+  // ===== RBDimmer 초기화 (테스트 성공한 코드 그대로) =====
   rbdimmer_init();
-  
-  // 제로 크로싱 감지기 등록 (PIN_OPTO_IN 사용)
   rbdimmer_register_zero_cross(ZERO_CROSS_PIN, PHASE_NUM, 0);
   
-  // 디머 채널 설정
   rbdimmer_config_t dimmer_config = {
     .gpio_pin = DIMMER_PIN,
     .phase = PHASE_NUM,
-    .initial_level = 0,                    // 초기값 0% (OFF)
-    .curve_type = RBDIMMER_CURVE_LINEAR    // 모터/펌프에 적합한 LINEAR
+    .initial_level = 0,
+    .curve_type = RBDIMMER_CURVE_LINEAR    // 펌프용 LINEAR
   };
   
   rbdimmer_create_channel(&dimmer_config, &dimmer_channel);
   
   // 초기 디머 상태 OFF
   setDimmerLevel(0);
+  
+  Serial.println("RBDimmer initialized successfully!");
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) for(;;);
   display.clearDisplay();
 
   prefs.begin("gaggia", false);
-  preInfusionPower = prefs.getInt("prePower", 40);
+  preInfusionPower = prefs.getInt("prePower", 40);    // 기본값 40%
   preInfusionTime  = prefs.getInt("preTime", 5000);
   pauseTime        = prefs.getInt("pauseTime", 3000);
   rampUpDuration   = prefs.getULong("rampUp", 2000);
-  currentProfileName = prefs.getString("profName", "Basic");
+  currentProfileName = prefs.getString("profName", "Classic");
   prefs.end();
 
   WiFi.config(local_IP, gateway, subnet);
@@ -275,6 +269,8 @@ void setup() {
 
   opMode = 1; 
   isProcessing = false;
+  
+  Serial.println("Setup complete! Ready to brew.");
 }
 
 void loop() {
