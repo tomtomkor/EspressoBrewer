@@ -5,14 +5,14 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
-#include "rbdimmerESP32.h"  // RBDimmer 라이브러리
+#include "rbdimmerESP32.h"
 
 Preferences prefs;
 
 // ===== RBDimmer 설정 =====
-#define ZERO_CROSS_PIN   5   // PIN_OPTO_IN (제로 크로싱 감지)
-#define DIMMER_PIN       7   // PIN_DIMMER_OUT (TRIAC 제어)
-#define PHASE_NUM        0   // 단상
+#define ZERO_CROSS_PIN   5   
+#define DIMMER_PIN       7   
+#define PHASE_NUM        0   
 
 rbdimmer_channel_t* dimmer_channel = NULL;
 
@@ -32,7 +32,7 @@ String currentProfileName = "Basic";
 bool isProcessing = false;      
 unsigned long brewStartTime = 0; 
 
-int preInfusionPower;      // 0-100% 값
+int preInfusionPower;      // 0-100% 
 int preInfusionTime;    
 int pauseTime;
 unsigned long rampUpDuration; 
@@ -48,7 +48,7 @@ const char* password = "password";
 
 // ===== 디머 제어 헬퍼 함수 =====
 void setDimmerLevel(int percent) {
-  // percent: 0-100 (0=OFF, 100=최대)
+  // percent: 0-100
   if (dimmer_channel != NULL) {
     rbdimmer_set_level(dimmer_channel, percent);
   }
@@ -76,7 +76,7 @@ void updateBrewDisplay(String status, unsigned long startTime) {
 }
 
 void showFinalTime(unsigned long startTime) {
-  setDimmerLevel(0);  // 디머 OFF
+  setDimmerLevel(0); 
   unsigned long total = (millis() - startTime) / 1000;
   displayStatus("TOTAL TIME", String(total) + " SEC");
   delay(5000); 
@@ -141,7 +141,7 @@ void handleExtraction() {
     }
 
     if (opMode == 1) {
-      setDimmerLevel(100);  // 100% 출력
+      setDimmerLevel(100); 
       updateBrewDisplay("PUMPING!", brewStartTime);
     } else {
       runBrewCycle();
@@ -188,7 +188,7 @@ void updateOLED() {
 
 void savePreferences() {
   prefs.begin("gaggia", false);
-  prefs.putInt("prePower", preInfusionPower);    // 0-100% 값 저장
+  prefs.putInt("prePower", preInfusionPower); 
   prefs.putInt("preTime", preInfusionTime);
   prefs.putInt("pauseTime", pauseTime);
   prefs.putULong("rampUp", rampUpDuration);
@@ -231,7 +231,6 @@ void setup() {
   pinMode(PIN_TOUCH_IN, INPUT);
   pinMode(PIN_DIMMER_OUT, OUTPUT);
   
-  // ===== RBDimmer 초기화 (테스트 성공한 코드 그대로) =====
   rbdimmer_init();
   rbdimmer_register_zero_cross(ZERO_CROSS_PIN, PHASE_NUM, 0);
   
@@ -239,12 +238,11 @@ void setup() {
     .gpio_pin = DIMMER_PIN,
     .phase = PHASE_NUM,
     .initial_level = 0,
-    .curve_type = RBDIMMER_CURVE_LINEAR    // 펌프용 LINEAR
+    .curve_type = RBDIMMER_CURVE_LINEAR    // LINEAR
   };
   
   rbdimmer_create_channel(&dimmer_config, &dimmer_channel);
   
-  // 초기 디머 상태 OFF
   setDimmerLevel(0);
   
   Serial.println("RBDimmer initialized successfully!");
@@ -253,7 +251,7 @@ void setup() {
   display.clearDisplay();
 
   prefs.begin("gaggia", false);
-  preInfusionPower = prefs.getInt("prePower", 40);    // 기본값 40%
+  preInfusionPower = prefs.getInt("prePower", 40);
   preInfusionTime  = prefs.getInt("preTime", 5000);
   pauseTime        = prefs.getInt("pauseTime", 3000);
   rampUpDuration   = prefs.getULong("rampUp", 2000);
