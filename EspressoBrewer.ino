@@ -255,7 +255,7 @@ void setup() {
   preInfusionTime  = prefs.getInt("preTime", 5000);
   pauseTime        = prefs.getInt("pauseTime", 3000);
   rampUpDuration   = prefs.getULong("rampUp", 2000);
-  currentProfileName = prefs.getString("profName", "Classic");
+  currentProfileName = prefs.getString("profName", "Basic");
   prefs.end();
 
   WiFi.config(local_IP, gateway, subnet);
