@@ -5,14 +5,14 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
-#include "rbdimmerESP32.h"  // RBDimmer 라이브러리
+#include "rbdimmerESP32.h"
 
 Preferences prefs;
 
 // ===== RBDimmer 설정 =====
-#define ZERO_CROSS_PIN   5   // PIN_OPTO_IN (제로 크로싱 감지)
-#define DIMMER_PIN       7   // PIN_DIMMER_OUT (TRIAC 제어)
-#define PHASE_NUM        0   // 단상
+#define ZERO_CROSS_PIN   5   // PIN_OPTO_IN (ZERO_CROSS)
+#define DIMMER_PIN       7   // PIN_DIMMER_OUT (TRIAC)
+#define PHASE_NUM        0   
 
 rbdimmer_channel_t* dimmer_channel = NULL;
 
@@ -32,7 +32,7 @@ String currentProfileName = "Basic";
 bool isProcessing = false;      
 unsigned long brewStartTime = 0; 
 
-int preInfusionPower;      // 0-100% 값
+int preInfusionPower;     
 int preInfusionTime;    
 int pauseTime;
 unsigned long rampUpDuration; 
@@ -43,9 +43,12 @@ IPAddress local_IP(192, 168, 0, 119);
 IPAddress gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
 
+const char* ssid = "Your SSID";
+const char* password = "password";
 
-// ===== 디머 제어 헬퍼 함수 =====
+
 void setDimmerLevel(int percent) {
+  // percent: 0-100 (0=OFF, 100=최대)
   if (dimmer_channel != NULL) {
     rbdimmer_set_level(dimmer_channel, percent);
   }
@@ -73,6 +76,7 @@ void updateBrewDisplay(String status, unsigned long startTime) {
 }
 
 void showFinalTime(unsigned long startTime) {
+  setDimmerLevel(0);  // 디머 OFF
   unsigned long total = (millis() - startTime) / 1000;
   displayStatus("TOTAL TIME", String(total) + " SEC");
   delay(5000); 
@@ -137,6 +141,7 @@ void handleExtraction() {
     }
 
     if (opMode == 1) {
+      setDimmerLevel(100);
       updateBrewDisplay("PUMPING!", brewStartTime);
     } else {
       runBrewCycle();
@@ -184,6 +189,7 @@ void updateOLED() {
 
 void savePreferences() {
   prefs.begin("gaggia", false);
+  prefs.putInt("prePower", preInfusionPower);
   prefs.putInt("preTime", preInfusionTime);
   prefs.putInt("pauseTime", pauseTime);
   prefs.putULong("rampUp", rampUpDuration);
@@ -197,7 +203,7 @@ void handleSettings() {
   deserializeJson(doc, server.arg("plain"));
   
   if (doc.containsKey("name")) currentProfileName = doc["name"].as<String>();
-  if (doc.containsKey("prePower")) preInfusionPower = doc["prePower"].as<int>();  // 0-100%
+  if (doc.containsKey("prePower")) preInfusionPower = doc["prePower"].as<int>();
   if (doc.containsKey("preTime"))  preInfusionTime  = 1000 * doc["preTime"].as<int>();
   if (doc.containsKey("pause"))    pauseTime        = 1000 * doc["pause"].as<int>();
   if (doc.containsKey("ramp"))     rampUpDuration   = 1000 * doc["ramp"].as<int>();
@@ -233,6 +239,7 @@ void setup() {
     .gpio_pin = DIMMER_PIN,
     .phase = PHASE_NUM,
     .initial_level = 0,
+    .curve_type = RBDIMMER_CURVE_LINEAR // LINEAR
   };
   
   rbdimmer_create_channel(&dimmer_config, &dimmer_channel);
@@ -246,6 +253,7 @@ void setup() {
   display.clearDisplay();
 
   prefs.begin("gaggia", false);
+  preInfusionPower = prefs.getInt("prePower", 40); 
   preInfusionTime  = prefs.getInt("preTime", 5000);
   pauseTime        = prefs.getInt("pauseTime", 3000);
   rampUpDuration   = prefs.getULong("rampUp", 2000);
