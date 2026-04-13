@@ -9,17 +9,20 @@
 
 Preferences prefs;
 
-// ===== RBDimmer 설정 =====
-#define ZERO_CROSS_PIN   5   // PIN_OPTO_IN (ZERO_CROSS)
+
+// ===== RBDimmer =====
+#define ZERO_CROSS_PIN   4   // PIN_ZERO_CROSS(ZC)
 #define DIMMER_PIN       7   // PIN_DIMMER_OUT (TRIAC)
+
 #define PHASE_NUM        0   
 
 rbdimmer_channel_t* dimmer_channel = NULL;
 
-// ===== 기존 핀 설정 =====
+// ===== Pin setting =====
 const int PIN_OPTO_IN    = 5;   
 const int PIN_TOUCH_IN   = 6;   
 const int PIN_DIMMER_OUT = 7;   
+
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
