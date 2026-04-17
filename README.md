@@ -10,7 +10,7 @@ I wanted it to be done automatically based on my favorate recipes.
 - AC 220V optocoupler isolation module (detects on/off status of the extraction button)
 - TTP223 touch sensor (mode toggle: manual/automatic(brew))
 - 0.91' OLED (I2C)
-- Perfboard (7X9; optional, preferred due to pump vibration)
+- Perfboard (7X9; optional, preferred considering pump vibration)
 
   * All are cheap and available on Aliexpress or Amazon (look in Photos folder)
 
@@ -56,23 +56,16 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
   are applied to brewing.
 
   * When launched for the first time, the app requests the local IP address assigned to
-    ESP32C#(e.g. 192.168.0.100).
-  * Local IP address should be provided in the arduino file (IPAddress local_IP(192, 168, 0, XXX);
-    in CoffeeBrewer.ino) together with your SSID and password of your router.
-  * 'BrewMate' is such a simple app that you can learn it in a few minutes without a manual.
+    ESP32C3(e.g.: 192.168.0.100).
+  * In advance, local IP address should be provided in the CoffeeBrewer.ino) 
+    together with your SSID and password of your router.
+  * 'BrewMate' is so simple that you can learn it in a few minutes without a manual.
 
+//  Wiring
 
-
-
-옵토커플러 L → 수동디머로 가던 L선 (펌프 L과 동일)
-옵토커플러 N → 메인 N 또는 PID N
-
-디머 입력 L → PID L
-디머 입력 N → 메인 N (또는 PID N)
-디머 출력 → 펌프 원래 L선
-
-
-
-
-
-
+- Pump Power(L)      ───→ Optocoupler L
+- Dimmer(output L)   ───→ Pump
+- Main power(or PID*) L  ───→ Dimmer (Input L)
+- Main power(or PID)  N 
+                      ├──→ Dimmer N
+                      └──→ Optocoupler N
