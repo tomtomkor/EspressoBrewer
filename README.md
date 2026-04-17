@@ -56,7 +56,7 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
 
 // Wiring
 
-- Pump Power(L)      ───→ Optocoupler L
+- Power(L) to pump    ───→ Optocoupler L
 - Dimmer(output L)   ───→ Pump
 - Main power(or PID*) L  ───→ Dimmer (Input L)
 - Main power(or PID)  N  ───→ Dimmer N
