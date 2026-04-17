@@ -69,4 +69,4 @@ There are two program files: an Arduino code file for ESP32C3(EspressoBrewer.ino
 
 // 3D print Case
 
-- If you use the hardwares mentioned above and have a 3D printer you could download BrewMateCase.stl file and print it for a case.
+- If you use the hardwares mentioned above and have a 3D printer you could download EspressoBrewerCase.stl file and print it for a case.
