@@ -52,7 +52,7 @@ There are two program files: an Arduino code file for ESP32C3(EspressoBrewer.ino
 
 - Once ESP32C3 gets the profile you sent from the phone, the received parameter values are applied to brewing.
 
-  * When launched for the first time, the app requests the local IP address assigned to ESP32C3(e.g.- 192.168.0.100).
+  * When launched for the first time, the app requests the local IP address assigned to ESP32C3(ex: 192.168.0.100).
   * In advance, local IP address should be provided in the CoffeeBrewer.ino together with your SSID and password of your router.
   * 'BrewMate' is so simple that you can learn it in a few minutes without a manual.
 
@@ -66,3 +66,7 @@ There are two program files: an Arduino code file for ESP32C3(EspressoBrewer.ino
   * If you have a PID installed.
 
 - ESP32C3 pin mappings with modules are explained in EspressoBrewer.ino file.
+
+// 3D print Case
+
+- If you use the hardwares mentioned above and have a 3D printer you could download BrewMateCase.stl file and print it for a case.
