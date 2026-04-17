@@ -6,7 +6,7 @@ I wanted it to be done automatically based on my favorate recipes.
 
 // Hardware requirements:
 - ESP32C3 supermini board (because of its small form factor)
-- - Robotdyn AC dimmer module (4A or higher model is OK; controls the pump power)
+- Robotdyn AC dimmer module (4A or higher model is OK; controls the pump power)
 - AC 220V optocoupler isolation module (detects on/off status of the extraction button)
 - TTP223 touch sensor (mode toggle: manual/automatic(brew))
 - 0.91' OLED (I2C)
