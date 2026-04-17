@@ -63,4 +63,4 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
 - Main power(or PID)  N  ───→ Optocoupler N
   * If you have a PID installed.
 
-- Pin mappings bwtween ESP32C3 and modules are explained in CofffeeBrewer.ino file.
+- ESP32C3 pin mappings with modules are explained in CofffeeBrewer.ino file.
