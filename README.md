@@ -1,6 +1,8 @@
 Espresso brewing process consists of 3 phases: preinfustion, blooming, and extracting.  
-You can do that easily on Gaggia machines if you have a dimmer and connect it to the pump. 
-I wanted it to be done automatically and repeatedly based on my favorate recipes.
+You can do that easily on old espresso machines like my Gaggia Classic if you have a dimmer 
+and connect it to the pump. 
+
+I wanted it to be done automatically based on my favorate recipes.
 
 // Hardware requirements:
 - ESP32C3 supermini board (because of its small form factor)
@@ -16,11 +18,11 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
 - The Arduino file should be compiled and uplodaded to ESP32C3 via Arduino IDE or the like.
 - The mobile app was built using 'MIT App Inventor'(https://appinventor.mit.edu).
   I have uploaded the associated file(BrewMate.aia) and you can download and modify it for 
-  rebuling the apk file if you want to.
+  rebuling an apk file if you want to.
   
 // Workflow
 
-- When you power on your Gaggia it is set to 'Manual' mode so that you can purge off air
+- When you power on your machine it is set to 'Manual' mode so that you can purge off air
   along the pipe line by pulling water. In this mode the pump operates in its full capacity.
 - Tap the touch sensor and it changes to 'Brew' mode. 
 - Ready: Wait for 5 minutes of Warming up. The coffee machine will be 'Ready' to start brewing.
@@ -28,7 +30,7 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
   temperature gets stabilized around the target 5 min. after it was turned on.
   This may differ according to situations and you can change this value(var: warmupLImit)
   in the arduino file.)
-- Preinfusion: Turn the extraction switch of Gaggia on. Preinfusion phase will begin.
+- Preinfusion: Turn the extraction switch of the machine on. Preinfusion phase will begin.
   This lasts at the user-set pump power level(percentage of the full pump capacity)
   during the user-set time.
 - Blooming: At the end of preinfusion, the pump will stop and pause for blooming during
