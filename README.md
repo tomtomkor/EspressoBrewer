@@ -13,7 +13,7 @@ I wanted it to be done automatically based on my favorate recipes.
 
   * All are cheap and available on Aliexpress or Amazon (look in Photos folder)
 
-There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) & a mobile app(BrewMate.apk)
+There are two program files: an Arduino code file for ESP32C3(EspressoBrewer.ino) & a mobile app(BrewMate.apk)
 - The Arduino file should be compiled and uplodaded to ESP32C3 via Arduino IDE or the like.
 - The mobile app was built using 'MIT App Inventor'(https://appinventor.mit.edu).
   I have uploaded the associated file(BrewMate.aia) and you can download and modify it for rebuling an apk file if you want to.
@@ -21,6 +21,7 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
 // Workflow
 
 - When you power on your machine it is set to 'Manual' mode so that you can purge off air along the pipe line by pulling water. In this mode the pump operates in its full capacity.
+  
 - Tap the touch sensor and it changes to 'Brew' mode. 
 
 - Ready: Wait for 5 minutes of Warming up. The coffee machine will be 'Ready' to start brewing. (In my case, the PID(XMT 7100) installed on my Gaggia Classic indicates that the boiler temperature gets stabilized around the target 5 min. after it was turned on. This may differ according to situations and you can change this value(var: warmupLImit) in the arduino file.)
@@ -40,6 +41,7 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
 // Setting parameters for brewing (Mobile app)
 
 - You can set and adjust parameter values using the mobile app 'BrewMate'.
+  
 - The parameters are: preinfusion duration(PreTime), preinfusion pump power(PrePower), blooming duration(Pause), maximum pump power for extraction(MxPower), and ramp-up duration(RampUp)
 
 - Those 5 parameter values with a name consists a 'Profile'
@@ -63,4 +65,4 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) 
 - Main power(or PID)  N  ───→ Optocoupler N
   * If you have a PID installed.
 
-- ESP32C3 pin mappings with modules are explained in CofffeeBrewer.ino file.
+- ESP32C3 pin mappings with modules are explained in EspressoBrewer.ino file.
