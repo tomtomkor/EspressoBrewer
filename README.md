@@ -7,6 +7,7 @@ Hardware requirements:
 - Robotdyn AC dimmer module (4A or higher model is OK; controls the pump power)
 - AC 220V optocoupler isolation module (detects on/off status of the extraction button)
 - TTP223 touch button (mode toggle: manual/automatic(brew))
+- Perfboard (7X9; optional, preferred due to pump vibration)
 
 * All are cheap and available on Aliexpress or Amazon (look in Photos folder)
 
