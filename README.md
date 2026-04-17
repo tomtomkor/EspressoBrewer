@@ -12,7 +12,7 @@ I wanted it to be done automatically and repeatedly based on my favorate recipes
 
   * All are cheap and available on Aliexpress or Amazon (look in Photos folder)
 
-There are two program files: an Arduino code file for ESP32C3(CoffeeBrew.ino) & a mobile app(BrewMate.apk)
+There are two program files: an Arduino code file for ESP32C3(CoffeeBrewer.ino) & a mobile app(BrewMate.apk)
 - The Arduino file should be compiled and uplodaded to ESP32C3 via Arduino IDE or the like.
 - The mobile app was built using 'MIT App Inventor'(https://appinventor.mit.edu).
   I have uploaded the associated file(BrewMate.aia) and you can download and modify it for 
@@ -55,7 +55,19 @@ There are two program files: an Arduino code file for ESP32C3(CoffeeBrew.ino) & 
 
   * When launched for the first time, the app requests the local IP address assigned to
     ESP32C#(e.g. 192.168.0.100).
-  * Local IP address should be designated in the arduino file 
+  * Local IP address should be provided in the arduino file (IPAddress local_IP(192, 168, 0, XXX);
+    in CoffeeBrewer.ino) together with your SSID and password of your router.
+  * 'BrewMate' is such a simple app that you can learn it in a few minutes without a manual.
+
+
+
+
+옵토커플러 L → 수동디머로 가던 L선 (펌프 L과 동일)
+옵토커플러 N → 메인 N 또는 PID N
+
+디머 입력 L → PID L
+디머 입력 N → 메인 N (또는 PID N)
+디머 출력 → 펌프 원래 L선
 
 
 
