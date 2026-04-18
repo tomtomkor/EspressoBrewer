@@ -1,59 +1,74 @@
-Espresso brewing process consists of 3 phases: preinfustion, blooming, and extracting.  
-You can do that easily on old espresso machines like my Gaggia Classic if you have a dimmer and connect it to the pump. 
+# ☕ Gaggia Classic Automation (ESP32-C3)
 
-I wanted it to be done automatically based on my favorate recipes.
+This project automates the espresso brewing process into three distinct phases: **Pre-infusion**, **Blooming**, and **Extraction**. By adding a dimmer and an ESP32-C3 to a classic machine like the Gaggia Classic, you can achieve professional pressure profiling based on your favorite recipes.
 
-// Hardware requirements:
-- ESP32C3 supermini board (because of its small form factor)
-- Robotdyn AC dimmer module (4A or higher model is OK; controls pump power)
-- AC 220V optocoupler isolation module (detects on/off status of the extraction button of machine)
-- TTP223 touch sensor (mode toggle: manual/automatic(brew))
-- 0.91' OLED (I2C)
-- Perfboard (7X9; optional, preferred considering pump vibration)
+---
 
-  * All are cheap and available on Aliexpress or Amazon (look in Photos folder)
+## 🛠 Hardware Requirements
+* **Controller:** ESP32-C3 SuperMini (chosen for its compact form factor)
+* **Dimmer:** Robotdyn AC Dimmer module (4A or higher model; controls pump power)
+* **Sensor:** AC 220V Optocoupler isolation module (detects the status of the extraction button)
+* **Input:** TTP223 Touch sensor (Mode toggle: Manual / Automatic Brew)
+* **Display:** 0.91" OLED (I2C)
+* **Build:** Perfboard (7x9 cm recommended to withstand pump vibration)
+* **Case:** 3D printed enclosure (`EspressoBrewerCase.stl` included)
 
-There are two program files: an Arduino code file for ESP32C3(EspressoBrewer.ino) & a mobile app(BrewMate.apk)
-- The Arduino file should be compiled and uplodaded to ESP32C3 via Arduino IDE or the like.
-- The mobile app was built using 'MIT App Inventor'(https://appinventor.mit.edu).
-  I have uploaded the associated file(BrewMate.aia) and you can download and modify it for rebuling an apk file if you want to.
+> **Note:** All components are affordable and easily available on AliExpress or Amazon. Refer to the `Photos` folder for visual aids.
 
-// Workflow
+---
 
-- When you power on your machine it is set to 'Manual' mode so that you can purge off air along the pipe line by pulling water. In this mode pump operates in its full capacity.
-- Tap the touch sensor and it changes to 'Brew' mode. 
-- Ready: Wait for 5 minutes to warm up the boiler. The coffee machine will be 'Ready' to start brewing. (I have a PID(XMT 7100) installed on my Gaggia Classic. It indicates that the boiler temperature gets stabilized around the target(105C) 5 min. after it was turned on. This may differ according to machines and you can change this value(var: warmupLImit) in the arduino file.)
-- Preinfusion: Turn the extraction switch of the machine on. Preinfusion phase will begin. The pump power level(percentage of the full pump capacity) is set to user-specified value during the user-specified time.
-- Blooming: At the end of preinfusion, the pump will completely stop and pause for blooming during the user-specified bloom time.
-- Ramping up: Pump power level gradually increases to the user-specified 'max' level(typically full power; 100%). You can try lower pressure extractions (e.g. Turbo shot) if you set the max level to be lower than 100%.
-- Extraction: User-specified max pump power is applied until you turn the extraction button off.
-- Back-to-Back: The coffee machine will warm up again. It will be 'Ready' after 2(not 5) minutes. This also can be changed in the arduino file.
-- Back Flushing: Tap the touch sensor. It changes to 'Manual' mode. Do flushing as you need.
+## 📱 Software
+* **Arduino Code (`EspressoBrewer.ino`):** Should be compiled and uploaded to ESP32-C3 via Arduino IDE.
+* **Mobile App (`BrewMate.apk`):** Built using [MIT App Inventor](https://appinventor.mit.edu).
+    * The associated source file (`BrewMate.aia`) is uploaded; you can modify and rebuild it if needed.
 
-// Setting parameters for brewing (Mobile app)
+---
 
-- You can set and adjust parameter values using the mobile app 'BrewMate'.
-- The parameters are: preinfusion duration(PreTime), preinfusion pump power(PrePower), blooming duration(Pause), maximum pump power for extraction(MxPower), and ramp-up duration(RampUp)
-- Those 5 parameter values with a name consists a 'Profile'
-- You can save multiple profiles on the phone and manage them (add/delete)
-- Retrieve one of them by name and send it to ESP32C3 via http protocol
-- Once ESP32C3 gets the profile you sent from the phone, the received parameter values are applied to brewing.
+## 🔄 Workflow
 
-  * When launched for the first time, the app requests the local IP address assigned to ESP32C3(ex: 192.168.0.100).
-  * Local IP address should be provided in the CoffeeBrewer.ino together with your SSID and password of your router.
-  * 'BrewMate' is so simple to use that you can learn it in a few minutes without a manual.
+1.  **Manual Mode (Default):** On power-up, the machine starts in Manual mode. The pump operates at full capacity, allowing you to purge air or flush the group head.
+2.  **Mode Toggle:** Tap the touch sensor to switch between **Manual** and **Brew** modes.
+3.  **Warm-up:** In Brew mode, the system waits for a warmup period (Default: 5 min). 
+    * *Note: Based on my Gaggia Classic with PID (XMT 7100), it takes about 5 minutes for the 105°C boiler temp to stabilize. You can adjust the `warmupLimit` variable in the Arduino file.*
+4.  **Pre-infusion:** Turn the extraction switch ON. The pump runs at a user-specified power level for a set duration.
+5.  **Blooming:** The pump stops completely for a "pause" or blooming phase.
+6.  **Ramping Up:** Pump power gradually increases to the user-specified maximum level.
+7.  **Extraction:** Maintains the specified max pump power until the extraction button is turned OFF manually.
+8.  **Back-to-Back:** After a shot, the machine warms up again and will be "Ready" after only 2 minutes.
+9.  **Back Flushing:** Switch to Manual mode via the touch sensor to perform flushing as needed.
 
-// Wiring
+---
 
-- Power(L) to pump    ───→ Optocoupler L
-- Dimmer(output L)   ───→ Pump
-- Main power(or PID*) L  ───→ Dimmer (Input L)
-- Main power(or PID)  N  ───→ Dimmer N
-- Main power(or PID)  N  ───→ Optocoupler N
-  * If you have a PID installed.
+## ⚙️ Setting Parameters (Mobile App)
+You can adjust parameters and manage profiles using the **BrewMate** app:
+* **PreTime:** Pre-infusion duration
+* **PrePower:** Pump power during pre-infusion
+* **Pause:** Blooming duration
+* **RampUp:** Duration to reach max power
+* **MxPower:** Maximum pump power (set below 100% for "Turbo Shots")
 
-- ESP32C3 pin mappings with modules are explained in EspressoBrewer.ino file.
+**Connection Details:**
+* The app requests the local IP address assigned to the ESP32-C3 (e.g., `192.168.0.119`) on first launch.
+* Configure your **SSID**, **Password**, and **Static IP** within the `EspressoBrewer.ino` file.
+* The app is designed to be intuitive and can be mastered in minutes without a manual.
 
-// 3D print Case
+---
 
-- If you use the hardwares mentioned above and have a 3D printer you could download EspressoBrewerCase.stl file and print it for the case.
+## 🔌 Wiring
+* **Power (L) to Pump** ───→ Optocoupler (L)
+* **Dimmer (Output L)** ───→ Pump
+* **Main Power (or PID*) L** ───→ Dimmer (Input L)
+* **Main Power (or PID) N** ───→ Dimmer (N)
+* **Main Power (or PID) N** ───→ Optocoupler (N)
+  *\*If a PID is installed.*
+
+> **Pin Mappings:** Detailed ESP32-C3 pin mappings for each module are documented in the `EspressoBrewer.ino` file.
+
+---
+
+## 📂 Files Included
+* `EspressoBrewer.ino`: Main Arduino source code.
+* `BrewMate.apk`: Android application for profile management.
+* `BrewMate.aia`: MIT App Inventor project file.
+* `EspressoBrewerCase.stl`: 3D printable case file.
+* `Photos/`: Hardware setup and wiring reference photos.
