@@ -46,10 +46,20 @@ This project automates the espresso brewing process into three distinct phases: 
 You can adjust parameters and manage profiles using the **BrewMate** app:
 
 * **PreTime:** Pre-infusion duration
+
 * **PrePower:** Pump power during pre-infusion
+
 * **Pause:** Blooming duration
+
 * **RampUp:** Duration to reach max power
+
 * **MxPower:** Maximum pump power (set below 100% for "Turbo Shots")
+  
+  
+  
+  Multiple brewing profiles can be stored on the mobile app. Users can select a profile by name to sync with the ESP32-C3 for immediate application.
+
+
 
 **Connection Details:**
 
