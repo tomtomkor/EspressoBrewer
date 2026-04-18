@@ -55,6 +55,9 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 ---
 
 ## 🔌 Wiring
+
+This guide covers both standard machines and those with a PID controller (e.g., XMT 7100) installed. If you don't have a PID, simply use the Main Power (AC Line) directly.
+
 [ CASE 1: Standard Machine ]
 AC Hot (L) ────▶ [ Dimmer Input L ]
 AC Neut (N) ───┬▶ [ Dimmer N ]
