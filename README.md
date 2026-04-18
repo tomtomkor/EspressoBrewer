@@ -70,7 +70,7 @@ AC Neut (N) ───┬──────────────────�
 
 [ PUMP & SENSING ]
 Dimmer Output L ──▶ [ Pump (L) ] ──┬──▶ [ Optocoupler L ]
-Main Neutral (N)  ──────────────────┘
+Main Neutral (N) ──────────────────┘
 
 > **Pin Mappings:** Detailed ESP32-C3 pin mappings for each module are documented in the `EspressoBrewer.ino` file.
 
