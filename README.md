@@ -63,7 +63,7 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 
 **Connection Details:**
 
-* The app requests the local IP address assigned to the ESP32-C3 (e.g., `192.168.0.119`) on first launch.
+* The app requests the local IP address assigned to the ESP32-C3 (e.g., `192.168.0.110`) on first launch.
 * Configure your **SSID**, **Password**, and **Static IP** within the `EspressoBrewer.ino` file.
 * The app is designed to be intuitive and can be mastered in minutes without a manual.
 
