@@ -53,7 +53,7 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 
 * **RampUp:** Duration to reach max power
 
-* **MxPower:** Maximum pump power (set below 100% for "Turbo Shots")
+* **MxPower:** Maximum pump power (e.g., set below 100% for "Turbo Shots")
 
   Multiple brewing profiles can be stored on the mobile app. Users can select a profile by name to sync with the ESP32-C3 for immediate application.
 
