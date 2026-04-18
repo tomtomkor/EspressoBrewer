@@ -34,7 +34,7 @@ This project automates the espresso brewing process into three distinct phases: 
    * *Note: Based on my Gaggia Classic with PID (XMT 7100), it takes about 5 minutes for the 105°C boiler temp to stabilize. You can adjust the `warmupLimit` variable in the Arduino file.*
 4. **Pre-infusion:** Turn the extraction switch ON. The pump runs at a user-specified power level for a set duration(0~20 seconds).
 5. **Blooming:** The pump stops completely for a "pause" or blooming phase(0~60s).
-6. **Ramping Up:** Pump power gradually increases from 0% to the user-specified maximum level over a 0~15 seconds .
+6. **Ramping Up:** Pump power gradually increases from 0% to the user-specified max level over a 0~15 seconds .
 7. **Extraction:** Maintains the specified max pump power until the extraction button is turned OFF manually.
 8. **Back-to-Back:** After a shot, the machine reheats and returns to "Ready" status in 2 minutes. (This duration is also adjustable in the CoffeeBrewer.ino file.)
 9. **Back Flushing:** Switch to Manual mode via the touch sensor to perform flushing as needed.
