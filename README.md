@@ -65,7 +65,7 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 * **Dimmer (Output L)** ───→ Pump
 * ***Main Power (or PID*) L*** ───→ Dimmer (Input L)
 * ***Main Power (or PID*) N*** ───→ Dimmer (N)
-* **Main Power (or PID)** **N*** ───→ Optocoupler (N)
+* ***Main Power (or PID)*** **N*** ───→ Optocoupler (N)
   *\*If a PID is installed.*
 
 > **Pin Mappings:** Detailed ESP32-C3 pin mappings for each module are documented in the `EspressoBrewer.ino` file.
