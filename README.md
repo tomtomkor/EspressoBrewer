@@ -54,24 +54,29 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 
 ---
 
-## 🔌 Wiring
+🔌 Electrical Wiring Guide
 
-This guide covers both standard machines and those with a PID controller (e.g., XMT 7100) installed. If you don't have a PID, simply use the Main Power (AC Line) directly.
+This guide covers both standard machines and those with a PID controller (e.g., XMT 7100) installed.
+
+💡 Wiring Schematic Flow
 
 [ CASE 1: Standard Machine ]
-AC Hot (L) ──────▶ [ Dimmer Input L ]
-AC Neutral (N) ──┬▶ [ Dimmer N ]
-                 └▶ [ Optocoupler N ]
+AC Hot (L) ---------------------> [ Dimmer Input L ]
+AC Neutral (N) ---------+-------> [ Dimmer N ]
+                        |
+                        +-------> [ Optocoupler N ]
 
 [ CASE 2: With PID (Optional) ]
-AC Hot (L) ──────▶ [ PID Controller ] ── (Output L) ──▶ [ Dimmer Input L ]
-AC Neutral (N) ──┬─────────────────────────────────────▶ [ Dimmer N ]
-                 └─────────────────────────────────────▶ [ Optocoupler N ]
+AC Hot (L) ----> [ PID Controller ] --(Output L)--> [ Dimmer Input L ]
+AC Neutral (N) ---------+-------------------------> [ Dimmer N ]
+                        |
+                        +-------------------------> [ Optocoupler N ]
 
 [ PUMP & SENSING ]
-Dimmer Output L ──▶ [ Pump (L) ] ──┬──▶ [ Optocoupler L ]
-AC Neutral (N)  ───────────────────┘
-
+Dimmer Output L ---------------> [ Pump (L) ] ---+
+                                                 |
+                                                 +--> [ Optocoupler L ]
+AC Neutral (N) ----------------------------------+
 > **Pin Mappings:** Detailed ESP32-C3 pin mappings for each module are documented in the `EspressoBrewer.ino` file.
 
 ---
