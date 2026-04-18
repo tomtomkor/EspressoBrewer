@@ -21,8 +21,7 @@ rbdimmer_channel_t* dimmer_channel = NULL;
 // ===== Pin setting =====
 const int PIN_OPTO_IN    = 5;   
 const int PIN_TOUCH_IN   = 6;   
-const int PIN_DIMMER_OUT = 7;   
-
+const int PIN_DIMMER_OUT = 7; 
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
@@ -99,6 +98,7 @@ void runBrewCycle() {
     if(digitalRead(PIN_OPTO_IN) == LOW) break;
     updateBrewDisplay("INFUSING...", brewStartTime);
     setDimmerLevel(preInfusionPower);  // preInfusionPower는 0-100%
+    yield();
   }
 
   // Phase 2: Pause
@@ -107,6 +107,7 @@ void runBrewCycle() {
     if(digitalRead(PIN_OPTO_IN) == LOW) break;
     updateBrewDisplay("PAUSING...", brewStartTime);
     setDimmerLevel(0);
+    yield();
   }
 
   // Phase 3: Extraction (Ramp up & Main)
@@ -118,6 +119,7 @@ void runBrewCycle() {
                        : 100;
     setDimmerLevel(currentPercent);
     updateBrewDisplay("EXTRACTING: ", brewStartTime);
+    yield();
     
     isReady = false;
     powerOnTime = millis();
