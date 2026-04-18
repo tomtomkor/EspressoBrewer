@@ -11,7 +11,7 @@ This project automates the espresso brewing process into three distinct phases: 
 * **Sensor:** AC 220V Optocoupler isolation module (detects the status of the extraction button)
 * **Input:** TTP223 Touch sensor (Mode toggle: Manual / Automatic Brew)
 * **Display:** 0.91" OLED (I2C)
-* **Power Stability:** 100µF or higher Capacitor (recommended for stabilizing power to the Dimmer/Pump logic.  Connect between **5V and GND** as close to the MCU as possible to stabilize logic power against Dimmer/Pump noise.)
+* **Power Stability:** 100µF or higher Capacitor (recommended for stabilizing power to the Dimmer/Pump logic.  Place the capacitor like a bridge between the 5V and GND pins on ESP32C3. Make sure the minus(-) side goes to GND.)
 * **Build:** Perfboard (7x9 cm recommended to withstand pump vibration)
 * **Case:** 3D printed enclosure (`EspressoBrewerCase.stl` included)
 
