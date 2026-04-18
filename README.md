@@ -11,6 +11,7 @@ This project automates the espresso brewing process into three distinct phases: 
 * **Sensor:** AC 220V Optocoupler isolation module (detects the status of the extraction button)
 * **Input:** TTP223 Touch sensor (Mode toggle: Manual / Automatic Brew)
 * **Display:** 0.91" OLED (I2C)
+* **Power Stability:** 100µF or higher Capacitor (recommended for stabilizing power to the Dimmer/Pump logic.  Connect between **5V and GND** as close to the MCU as possible to stabilize logic power against Dimmer/Pump noise.)
 * **Build:** Perfboard (7x9 cm recommended to withstand pump vibration)
 * **Case:** 3D printed enclosure (`EspressoBrewerCase.stl` included)
 
@@ -54,7 +55,7 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 * **RampUp:** Duration to reach max power
 
 * **MxPower:** Maximum pump power (e.g., set below 100% for "Turbo Shots")
-
+  
   Multiple brewing profiles can be stored on the mobile app. Users can select a profile by name to sync with the ESP32-C3 for immediate application.
 
 **Connection Details:**
