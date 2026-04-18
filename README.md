@@ -57,7 +57,7 @@ You can adjust parameters and manage profiles using the **BrewMate** app:
 ## 🔌 Wiring
 * **Power (L) to Pump** ───→ Optocoupler (L)
 * **Dimmer (Output L)** ───→ Pump
-* **Main Power (or PID*) L** ───→ Dimmer (Input L)
+* **Main Power (or PID) L** ───→ Dimmer (Input L)
 * **Main Power (or PID) N** ───→ Dimmer (N)
 * **Main Power (or PID) N** ───→ Optocoupler (N)
   *\*If a PID is installed.*
