@@ -19,9 +19,9 @@ Preferences prefs;
 rbdimmer_channel_t* dimmer_channel = NULL;
 
 // ===== Pin setting =====
-const int PIN_OPTO_IN    = 5;   
-const int PIN_TOUCH_IN   = 6;   
-const int PIN_DIMMER_OUT = 7; 
+const int PIN_OPTO_IN    = 5;   // Optocoupler signal pin
+const int PIN_TOUCH_IN   = 6;   // Touch sensor signal pin
+const int PIN_DIMMER_OUT = 7;   // Dimmer signal pin
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
