@@ -258,7 +258,6 @@ void setup() {
   Serial.println("RBDimmer initialized successfully!");
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) for(;;);
-  delay(100);
   display.clearDisplay();
   display.display();
 
