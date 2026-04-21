@@ -8,7 +8,7 @@ This project automates the espresso brewing process into three distinct phases: 
 
 * **Controller:** ESP32-C3 SuperMini (chosen for its compact form factor)
 * **Dimmer:** Robotdyn AC Dimmer module (4A or higher model; controls pump power)
-* **Sensor:** AC 220V Optocoupler isolation module (detects the status of the extraction button)
+* **Sensor:** AC Optocoupler isolation module (detects the status of the extraction button)
 * **Input:** TTP223 Touch sensor (Mode toggle: Manual / Automatic Brew)
 * **Display:** 0.91" OLED (I2C)
 * **Power Stability:** 100µF or higher Capacitor for dimmer (recommended for stabilizing power to the Dimmer/Pump logic.  Place the capacitor like a bridge between the 5V and GND pins on ESP32C3. Make sure the minus(-) side goes to GND.)
