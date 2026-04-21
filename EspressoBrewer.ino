@@ -266,7 +266,7 @@ void setup() {
   preInfusionTime    = prefs.getInt("preTime", 10000);          // defualt: 10 Sec
   pauseTime          = prefs.getInt("pauseTime", 15000);        // defualt: 15 Sec
   maxPower           = prefs.getInt("maxPower", 100);           // defualt: 100%
-  rampUpDuration     = prefs.getULong("rampUp", 3000);          // defualt: 3 Sec
+  rampUpDuration     = prefs.getULong("rampUp", 4000);          // defualt: 4 Sec
   currentProfileName = prefs.getString("profName", "Basic");
   prefs.end();
 
