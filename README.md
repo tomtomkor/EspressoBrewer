@@ -1,6 +1,6 @@
 # ☕ Brew Automation (ESP32-C3)
 
-This project automates the espresso brewing process into three distinct phases: **Pre-infusion**, **Blooming**, and **Extraction**. By adding a dimmer and an ESP32-C3 to a classic machine like the Gaggia Classic, you can achieve your own pressure profiling based on your favorite recipes.
+This project automates the espresso brewing process into three distinct phases: **Pre-infusion**, **Blooming**, and **Extraction**. By adding a dimmer and an ESP32-C3 to a classic machine like the Gaggia Classic, you can achieve custom pressure profiling based on your favorite recipes.
 
 ---
 
