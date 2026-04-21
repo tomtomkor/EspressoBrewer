@@ -16,6 +16,7 @@ This project automates the espresso brewing process into three distinct phases: 
 * **Case:** 3D printed enclosure (`EspressoBrewerCase.stl` included)
 
 > **Note:** All components are affordable and easily available on AliExpress or Amazon. Refer to the `Photos` folder for visual aids.
+> 
 > **Note:** 5V output of ESP32C3 to Dimmer. 3.3V to other modules.
 
 ---
