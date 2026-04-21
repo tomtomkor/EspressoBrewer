@@ -34,11 +34,12 @@ String currentProfileName = "Basic";
 bool isProcessing = false;      
 unsigned long brewStartTime = 0; 
 
-int preInfusionPower;     
+int preInfusionPower;                // 0-100%   
 int preInfusionTime;    
 int pauseTime;
+int maxPower;
 unsigned long rampUpDuration; 
-unsigned long warmupLimit = 300000;  // Time to temp stabilizization
+unsigned long warmupLimit = 300000;  // Time to temp(PID) stabilizization (5min.)
 
 WebServer server(80);
 IPAddress local_IP(192, 168, 0, XXX);
@@ -50,7 +51,6 @@ const char* password = "password";
 
 
 void setDimmerLevel(int percent) {
-  // percent: 0-100 (0=OFF, 100=최대)
   if (dimmer_channel != NULL) {
     rbdimmer_set_level(dimmer_channel, percent);
   }
@@ -78,7 +78,7 @@ void updateBrewDisplay(String status, unsigned long startTime) {
 }
 
 void showFinalTime(unsigned long startTime) {
-  setDimmerLevel(0);  // 디머 OFF
+  setDimmerLevel(0); 
   unsigned long total = (millis() - startTime) / 1000;
   displayStatus("TOTAL TIME", String(total) + " SEC");
   delay(5000); 
@@ -97,7 +97,7 @@ void runBrewCycle() {
   while(millis() - brewStartTime < preInfusionTime) {
     if(digitalRead(PIN_OPTO_IN) == LOW) break;
     updateBrewDisplay("INFUSING...", brewStartTime);
-    setDimmerLevel(preInfusionPower);  // preInfusionPower는 0-100%
+    setDimmerLevel(preInfusionPower); 
     yield();
   }
 
@@ -213,7 +213,6 @@ void handleSettings() {
   if (doc.containsKey("pause"))    pauseTime        = 1000 * doc["pause"].as<int>();
   if (doc.containsKey("ramp"))     rampUpDuration   = 1000 * doc["ramp"].as<int>();
   
-  // 값 범위 제한 (안전을 위해)
   preInfusionPower = constrain(preInfusionPower, 0, 100);
   
   savePreferences();
@@ -230,38 +229,45 @@ void handleStatus() {
 }
 
 void setup() {
+  delay(1000);  // capacitor charging
+
   Serial.begin(115200);
   powerOnTime = millis();
   
-  pinMode(PIN_OPTO_IN, INPUT); 
-  pinMode(PIN_TOUCH_IN, INPUT);
+  pinMode(PIN_OPTO_IN, INPUT_PULLUP); 
+  pinMode(PIN_TOUCH_IN, INPUT_PULLUP);
   pinMode(PIN_DIMMER_OUT, OUTPUT);
   
   rbdimmer_init();
   rbdimmer_register_zero_cross(ZERO_CROSS_PIN, PHASE_NUM, 0);
   
+  //RBDIMMER_CURVE_LINEAR: The light output changes directly with the input signal.
+  //RBDIMMER_CURVE_LOGARITHMIC: Changes in the dimming signal happen slower at low level
+  //                            and faster at the brighter end     
   rbdimmer_config_t dimmer_config = {
     .gpio_pin = DIMMER_PIN,
     .phase = PHASE_NUM,
     .initial_level = 0,
-    .curve_type = RBDIMMER_CURVE_LINEAR // LINEAR
+    //.curve_type = RBDIMMER_CURVE_LINEAR
+    .curve_type = RBDIMMER_CURVE_LOGARITHMIC
   };
   
   rbdimmer_create_channel(&dimmer_config, &dimmer_channel);
-  
-  // 초기 디머 상태 OFF
   setDimmerLevel(0);
   
   Serial.println("RBDimmer initialized successfully!");
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) for(;;);
+  delay(100);
   display.clearDisplay();
+  display.display();
 
   prefs.begin("gaggia", false);
-  preInfusionPower = prefs.getInt("prePower", 40); 
-  preInfusionTime  = prefs.getInt("preTime", 5000);
-  pauseTime        = prefs.getInt("pauseTime", 3000);
-  rampUpDuration   = prefs.getULong("rampUp", 2000);
+  preInfusionPower   = prefs.getInt("prePower", 25);            // defualt: 25%
+  preInfusionTime    = prefs.getInt("preTime", 10000);          // defualt: 10 Sec
+  pauseTime          = prefs.getInt("pauseTime", 15000);        // defualt: 15 Sec
+  maxPower           = prefs.getInt("maxPower", 100);           // defualt: 100%
+  rampUpDuration     = prefs.getULong("rampUp", 3000);          // defualt: 3 Sec
   currentProfileName = prefs.getString("profName", "Basic");
   prefs.end();
 
@@ -274,8 +280,6 @@ void setup() {
 
   opMode = 1; 
   isProcessing = false;
-  
-  Serial.println("Setup complete! Ready to brew.");
 }
 
 void loop() {
