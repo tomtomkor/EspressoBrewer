@@ -248,8 +248,8 @@ void setup() {
     .gpio_pin = DIMMER_PIN,
     .phase = PHASE_NUM,
     .initial_level = 0,
-    //.curve_type = RBDIMMER_CURVE_LINEAR
-    .curve_type = RBDIMMER_CURVE_LOGARITHMIC
+    .curve_type = RBDIMMER_CURVE_LINEAR
+    //.curve_type = RBDIMMER_CURVE_LOGARITHMIC
   };
   
   rbdimmer_create_channel(&dimmer_config, &dimmer_channel);
