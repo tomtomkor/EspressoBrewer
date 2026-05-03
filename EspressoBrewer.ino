@@ -270,9 +270,9 @@ void setup() {
   display.display();
 
   prefs.begin("gaggia", false);
-  preInfusionPower   = prefs.getInt("prePower", 25);            // defualt: 25%
-  preInfusionTime    = prefs.getInt("preTime", 10000);          // defualt: 10 Sec
-  pauseTime          = prefs.getInt("pauseTime", 15000);        // defualt: 15 Sec
+  preInfusionPower   = prefs.getInt("prePower", 40);            // defualt: 40%
+  preInfusionTime    = prefs.getInt("preTime", 7000);           // defualt: 7 Sec
+  pauseTime          = prefs.getInt("pauseTime", 15000);        // defualt: 10 Sec
   maxPower           = prefs.getInt("maxPower", 100);           // defualt: 100%
   rampUpDuration     = prefs.getULong("rampUp", 4000);          // defualt: 4 Sec
   currentProfileName = prefs.getString("profName", "Basic");
