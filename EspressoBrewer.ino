@@ -94,13 +94,13 @@ void runBrewCycle() {
   // Kick-start
   setDimmerLevel(80); 
   delay(150); 
-
+  
   setDimmerLevel(preInfusionPower);
   brewStartTime = millis(); 
   
   // Phase 1: Pre-Infusion
   while(millis() - brewStartTime < preInfusionTime) {
-    if(digitalRead(PIN_OPTO_IN) == HIGH) break;
+    if(digitalRead(PIN_OPTO_IN) == LOW) break;
     static uint32_t lastDisplayUpdate = 0;
     if(millis() - lastDisplayUpdate > 100) { 
         updateBrewDisplay("INFUSING...", brewStartTime);
